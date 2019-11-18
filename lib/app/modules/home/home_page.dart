@@ -19,14 +19,16 @@ class _HomePageState extends State<HomePage> {
 
   _showDialog([TodoModel model]) {
     model = model ?? TodoModel();
+    String titleCache = model.title;
 
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: Text("Novo"),
-          content: TextField(
+          title: Text(model.id != null ? "Editar" : "Novo"),
+          content: TextFormField(
+            initialValue: model.title,
             maxLines: 5,
             onChanged: (v) {
               model.title = v;
@@ -36,13 +38,18 @@ class _HomePageState extends State<HomePage> {
             FlatButton(
               child: Text("Cancelar"),
               onPressed: () {
+                model.title = titleCache;
                 Navigator.pop(context);
               },
             ),
             FlatButton(
               child: Text("Salvar"),
               onPressed: () {
-                controller.add(model);
+                if (model.id != null) {
+                  controller.update(model);
+                } else {
+                  controller.add(model);
+                }
                 Navigator.pop(context);
               },
             ),
@@ -56,6 +63,35 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          Observer(
+            builder: (_) => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                  child: Text("${controller.itemsTotal}",
+                      style: Theme.of(context).textTheme.title)),
+            ),
+          ),
+          Observer(
+            builder: (_) => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                  child: Text(
+                "${controller.itemsTotalCheck}",
+                style: Theme.of(context).textTheme.title,
+              )),
+            ),
+          ),
+        ],
+        leading: IconButton(
+          icon: Icon(
+            Icons.remove_circle_outline,
+            color: Colors.red,
+          ),
+          onPressed: () {
+            controller.cleanAll();
+          },
+        ),
         title: Text(widget.title),
       ),
       body: Observer(
@@ -66,6 +102,9 @@ class _HomePageState extends State<HomePage> {
               TodoModel model = controller.list[index];
               return ItemWidget(
                 model: model,
+                onPressed: () {
+                  _showDialog(model);
+                },
               );
             },
           );

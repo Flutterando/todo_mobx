@@ -23,6 +23,29 @@ abstract class _HomeBase with Store {
     list.add(model);
   }
 
+  @action
+  remove(int id) async {
+    await service.remove(id);
+    list.removeWhere((item) => item.id == id);
+  }
+
+  @action
+  update(TodoModel model) async {
+    await service.update(model);
+  }
+
+  @action
+  cleanAll() async {
+    await service.clear();
+    list.clear();
+  }
+
   @observable
   ObservableList<TodoModel> list = ObservableList<TodoModel>();
+
+  @computed
+  int get itemsTotal => list.length;
+
+  @computed
+  int get itemsTotalCheck => list.where((item) => item.check).length;
 }

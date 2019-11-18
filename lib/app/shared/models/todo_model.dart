@@ -7,7 +7,7 @@ class TodoModel extends _TodoModel with _$TodoModel {
       : super(id: id, title: title, check: check);
 
   toJson() {
-    return {"title": title, "check": check};
+    return {"id": id, "title": title, "check": check};
   }
 
   factory TodoModel.fromJson(Map json) {
@@ -18,6 +18,8 @@ class TodoModel extends _TodoModel with _$TodoModel {
 
 abstract class _TodoModel with Store {
   int id;
+
+  @observable
   String title;
 
   @observable
